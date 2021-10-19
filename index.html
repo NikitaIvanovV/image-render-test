@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #images img {
+            max-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <textarea name="code" id="code" cols="60" rows="20">
+Num Number = 1
+loop(0, 10) {
+    collision()
+}
+        </textarea>
+    </div>
+    <div id="control">
+        <button id="generate-image-button" type="submit" disabled>Generate image</button>
+    </div>
+    <div id="images"></div>
+</body>
+<script src="index.js"></script>
+<script>
+    const inputArea = document.getElementById("code");
+    const imagesDiv = document.getElementById("images");
+    const generateImageButton = document.getElementById('generate-image-button');
+    var fd = null;
+    var url = null;
+
+    function generateImage() {
+        if (url !== null) {
+            fd.destroyURL(url);    
+        }
+        url = fd.createImageURLFromString(inputArea.value);
+        const image = document.createElement('img');
+        image.src = url;
+        imagesDiv.replaceChildren(image);
+    }
+
+    Module.onRuntimeInitialized = () => {
+        generateImageButton['disabled'] = false;
+        fd = new FanscriptDrawer;
+    };
+
+    generateImageButton.addEventListener('click', () => generateImage());
+
+    document.addEventListener('keydown', (event) => {
+        if (event.ctrlKey && event.key === 'Enter') {
+            generateImage();
+        }
+    });
+</script>
+</html>
