@@ -1,58 +1,87 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        #images img {
-            max-width: 500px;
-        }
-    </style>
-</head>
-<body>
-    <div>
-        <textarea name="code" id="code" cols="60" rows="20">
-Num Number = 1
-loop(0, 10) {
-    collision()
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width" />
+        <title>Test</title>
+        <style>
+            #images img {
+                width: 100%;
+            }
+        </style>
+    </head>
+    <body>
+        <textarea id="textarea" name="Code" rows="20" cols="60">
+Num End = 10
+
+play_sensor() {
+    Rot Rotation = <1, 2, 3>
+    Num Float = 1.2
 }
-        </textarea>
-    </div>
-    <div id="control">
-        <button id="generate-image-button" type="submit" disabled>Generate image</button>
-    </div>
-    <div id="images"></div>
-</body>
-<script src="index.js"></script>
-<script>
-    const inputArea = document.getElementById("code");
-    const imagesDiv = document.getElementById("images");
-    const generateImageButton = document.getElementById('generate-image-button');
-    var fd = null;
-    var url = null;
 
-    function generateImage() {
-        if (url !== null) {
-            fd.destroyURL(url);    
-        }
-        url = fd.createImageURLFromString(inputArea.value);
-        const image = document.createElement('img');
-        image.src = url;
-        imagesDiv.replaceChildren(image);
+loop(1, 2) {
+    Vec Vector = add_vectors([100, 200, 300], [1, 2, 3])
+    Vec Vector = scale_vector(make_vector(1, 2, 3), 50)
+    if(equal_numbers(2, Num Float)) {
+        Bool B = True
+    } else {
+        Bool B = False
     }
+}
+</textarea>
+        <div id="controls">
+            <button id="generate-image-button" disabled>Generate image</button>
+        </div>
+        <div id="images"></div>
+        <script src="index.js"></script>
+        <script>
+            var fd = null;
+            var imageURL = null;
+            var textArea = document.getElementById("textarea");
+            var imagesArea = document.getElementById("images");
+            var generateImageButton = document.getElementById("generate-image-button");
 
-    Module.onRuntimeInitialized = () => {
-        generateImageButton['disabled'] = false;
-        fd = new FanscriptDrawer;
-    };
+            function createErrorMessage(e) {
+                var div = document.createElement('div');
+                var p = document.createElement('p');
+                p.innerText = `${e.name}`;
+                div.replaceChildren(p);
+                return div;
+            }
 
-    generateImageButton.addEventListener('click', () => generateImage());
+            function generateImage() {
+                if (imageURL !== null) {
+                    fd.destroyURL(imageURL);
+                    imageURL = null;
+                }
+                try {
+                    imageURL = fd.createImageURLFromString(textarea.value);
+                } catch (e) {
+                    if (e.name === "ParseError") {
+                        imagesArea.replaceChildren(createErrorMessage(e));
+                        return;
+                    } else {
+                        imagesArea.replaceChildren(createErrorMessage(new Error));
+                        throw e;
+                    }
+                }
+                var image = document.createElement('img');
+                image.src = imageURL;
+                imagesArea.replaceChildren(image);
+            }
 
-    document.addEventListener('keydown', (event) => {
-        if (event.ctrlKey && event.key === 'Enter') {
-            generateImage();
-        }
-    });
-</script>
+            Module.onRuntimeInitialized = () => {
+                fd = new FanscriptDrawer;
+                generateImageButton.disabled = false;
+            }
+
+            generateImageButton.addEventListener("click", () => generateImage());
+
+            document.addEventListener('keydown', (event) => {
+                if (event.ctrlKey && event.key === 'Enter') {
+                    generateImage();
+                }
+            });
+        </script>
+    </body>
 </html>
